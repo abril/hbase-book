@@ -186,7 +186,7 @@
     <dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase</artifactId>
-      <version>0.91.0-SNAPSHOT</version>
+      <version>0.90.4</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.avro</groupId>
@@ -313,6 +313,13 @@
           <artifactId>jamon-runtime</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+    	<groupId>socialcore</groupId>
+    	<artifactId>commons-activitymanager</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
 
