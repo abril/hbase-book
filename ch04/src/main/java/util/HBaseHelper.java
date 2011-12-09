@@ -1,5 +1,12 @@
 package util;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -11,10 +18,8 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import socialcore.activitymanager.model.Atividade;
+import socialcore.activitymanager.utils.KeyGenerator;
 
 /**
  * Used by the book examples to generate tables and fill them with test data.
@@ -48,6 +53,7 @@ public class HBaseHelper {
     HTableDescriptor desc = new HTableDescriptor(table);
     for (String cf : colfams) {
       HColumnDescriptor coldef = new HColumnDescriptor(cf);
+      coldef.setMaxVersions(1);
       desc.addFamily(coldef);
     }
     if (splitKeys != null) {
@@ -94,7 +100,8 @@ public class HBaseHelper {
     Random rnd = new Random();
     for (int row = startRow; row <= endRow; row++) {
       for (int col = 0; col < numCols; col++) {
-        Put put = new Put(Bytes.toBytes("row-" + padNum(row, pad)));
+//        Put put = new Put(Bytes.toBytes("row-" + padNum(row, pad)));
+    	  Put put = new Put(Bytes.toBytes("row-" + padNum(row, pad)));
         for (String cf : colfams) {
           String colName = "col-" + padNum(col, pad);
           String val = "val-" + (random ?
@@ -113,6 +120,51 @@ public class HBaseHelper {
     }
     tbl.close();
   }
+  
+	public void fillTableAtividades(String table, int startRow, int endRow,
+			int numCols, int pad, boolean setTimestamp, boolean random,
+			String... colfams) throws IOException {
+		HTable tbl = new HTable(conf, table);
+		Random rnd = new Random();
+		for (int row = startRow; row <= endRow; row++) {
+			for (int col = 0; col < numCols; col++) {
+				// Put put = new Put(Bytes.toBytes("row-" + padNum(row, pad)));
+				long usuario = 0;
+				
+				if(row % 2 == 0){
+					usuario = 123;
+				}else{
+					usuario = 222;
+				}
+				
+				Atividade atividade = new Atividade();
+				atividade.setApp(1L);
+				atividade.setUsuario(usuario);
+				atividade.setSujeito(usuario);
+				atividade.setCreatedAt(new Timestamp(new Date().getTime()));
+				atividade.setTipo("comentario");
+				
+				String rowKey = KeyGenerator.keyFor(atividade);
+				
+				Put put = new Put(Bytes.toBytes(rowKey));
+				for (String cf : colfams) {
+					String colName = "col-" + padNum(col, pad);
+					String val = "val-"
+							+ (random ? Integer.toString(rnd.nextInt(numCols))
+									: padNum(row, pad) + "." + padNum(col, pad));
+					if (setTimestamp) {
+						put.add(Bytes.toBytes(cf), Bytes.toBytes(colName), col,
+								Bytes.toBytes(val));
+					} else {
+						put.add(Bytes.toBytes(cf), Bytes.toBytes(colName),
+								Bytes.toBytes(val));
+					}
+				}
+				tbl.put(put);
+			}
+		}
+		tbl.close();
+	}
 
   public String padNum(int num, int pad) {
     String res = Integer.toString(num);
