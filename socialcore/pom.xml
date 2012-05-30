@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>socialcore</groupId>
+	<artifactId>socialcore-examples</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<repositories>
+		<repository>
+			<id>v-maven-alx01-releases</id>
+			<name>Artifactory Releases</name>
+			<url>http://172.16.2.218/artifactory/libs-release-local/</url>
+		</repository>
+		<repository>
+			<id>v-maven-alx01-snapshot</id>
+			<name>Artifactory Snapshot</name>
+			<url>http://172.16.2.218/artifactory/libs-snapshot-local/</url>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>socialcore</groupId>
+			<artifactId>commons-activitymanager</artifactId>
+			<version>0.1.19-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
