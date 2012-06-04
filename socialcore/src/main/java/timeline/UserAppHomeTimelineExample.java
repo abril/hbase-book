@@ -18,7 +18,6 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -26,6 +25,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import socialcore.activitymanager.db.hbase.HBaseRecordBuilder;
 import socialcore.activitymanager.model.Atividade;
 import util.AtividadeBuilder;
+import util.AtividadeComparator;
 import util.HBaseHelper;
 
 public class UserAppHomeTimelineExample {
@@ -128,32 +128,21 @@ public class UserAppHomeTimelineExample {
 	    	String seguidoAsString = StringUtils.leftPad(String.valueOf(seguido), 20, '0');
 		    builder.append("|");
 		    builder.append(seguidoAsString);
-//	    	filters.add(new SingleColumnValueFilter(family, qualifier , CompareOp.EQUAL, new BinaryComparator(value)));
 		}
 	    builder.append(")-");
 	    builder.append(StringUtils.leftPad(String.valueOf(APP), 20, '0'));
 	    builder.append("-");
 	    builder.append(".+");
-//	    
-//	    filters.add(new SingleColumnValueFilter(family, qualifier , CompareOp.EQUAL, new BinaryComparator(Bytes.toBytes(USER))));
-	    filters.add(new RowFilter(CompareOp.EQUAL, new RegexStringComparator(builder.toString())));
-	    
-	    
-	    
-//	    filters.add(new SingleColumnValueFilter(family, Bytes.toBytes("app") , CompareOp.EQUAL, Bytes.toBytes(APP)));
-	    PageFilter pageFilter = new PageFilter(3);
-	    filters.add(pageFilter);
 
-	    
+	    filters.add(new RowFilter(CompareOp.EQUAL, new RegexStringComparator(builder.toString())));
 	    FilterList filterList = new FilterList(filters);
 	    scan.setFilter(filterList);
-	    
 	    
 	    
 	    ResultScanner scanner = table.getScanner(scan);
 	    
 	    List<Atividade> atividades = new ArrayList<Atividade>();
-	    Set<Atividade> atividadesSet = new TreeSet<Atividade>();
+	    Set<Atividade> atividadesSet = new TreeSet<Atividade>(new AtividadeComparator());
 	     
 	    for (Result result : scanner) {
 	    	Atividade atividade = HBaseRecordBuilder.builderFor(Atividade.class).toRecord(result);
@@ -164,7 +153,7 @@ public class UserAppHomeTimelineExample {
 		}
 	    System.out.println("*****");
 	    
-	    Collections.sort(atividades);
+	    Collections.sort(atividades, new AtividadeComparator());
 	    for (Atividade atividade : atividades) {
 	    	System.out.println(atividade.getPublishedAt().getTime() + " " + atividade.getResultado().getFlexibleFields("corpo"));
 		}

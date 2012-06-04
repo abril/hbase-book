@@ -176,22 +176,7 @@ public class AnalyzeData {
 		 */
 		populateHbase();
 		
-		List<Long> seguidosUsuario1 = new ArrayList<Long>();
-		seguidosUsuario1.add(2L);
-		seguidosUsuario1.add(3L);
-		seguidosUsuario1.add(4L);
-		
-		List<Long> seguidosUsuario2 = new ArrayList<Long>();
-		seguidosUsuario1.add(3L);
-		
-		List<Long> seguidosUsuario3 = new ArrayList<Long>();
-		seguidosUsuario1.add(2L);
-		
-		
-		SEGUIDOS.put(1L, seguidosUsuario1);
-		SEGUIDOS.put(2L, seguidosUsuario2);
-		SEGUIDOS.put(3L, seguidosUsuario3);
-
+		populateFollowing();
 
 		// vv AnalyzeData
 		/*
@@ -204,7 +189,6 @@ public class AnalyzeData {
 		List<Filter> filters = new ArrayList<Filter>();
 		
 		scan.addFamily(Bytes.toBytes(COLUMN_FAMILY_INFO));
-//		scan.setTimeRange(minStamp, maxStamp);
 	    
 	    List<Long> seguidos = SEGUIDOS.get(USER);
 	    StringBuilder builder = new StringBuilder("^(");
@@ -214,14 +198,12 @@ public class AnalyzeData {
 	    	String seguidoAsString = StringUtils.leftPad(String.valueOf(seguido), 20, '0');
 		    builder.append("|");
 		    builder.append(seguidoAsString);
-//	    	filters.add(new SingleColumnValueFilter(family, qualifier , CompareOp.EQUAL, new BinaryComparator(value)));
 		}
 	    builder.append(")-");
 	    builder.append(StringUtils.leftPad(String.valueOf(APP), 20, '0'));
 	    builder.append("-");
 	    builder.append(".+");
-//	    
-//	    filters.add(new SingleColumnValueFilter(family, qualifier , CompareOp.EQUAL, new BinaryComparator(Bytes.toBytes(USER))));
+
 	    filters.add(new RowFilter(CompareOp.EQUAL, new RegexStringComparator(builder.toString())));
 
 		Job job = new Job(conf, "Analyze data in " + TABLE_NAME_ACTIVITIES);
@@ -237,6 +219,25 @@ public class AnalyzeData {
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 	// ^^ AnalyzeData
+
+
+	private static void populateFollowing() {
+		List<Long> seguidosUsuario1 = new ArrayList<Long>();
+		seguidosUsuario1.add(2L);
+		seguidosUsuario1.add(3L);
+		seguidosUsuario1.add(4L);
+		
+		List<Long> seguidosUsuario2 = new ArrayList<Long>();
+		seguidosUsuario1.add(3L);
+		
+		List<Long> seguidosUsuario3 = new ArrayList<Long>();
+		seguidosUsuario1.add(2L);
+		
+		
+		SEGUIDOS.put(1L, seguidosUsuario1);
+		SEGUIDOS.put(2L, seguidosUsuario2);
+		SEGUIDOS.put(3L, seguidosUsuario3);
+	}
 
 
 
