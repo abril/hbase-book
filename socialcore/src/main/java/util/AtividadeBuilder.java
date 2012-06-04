@@ -1,7 +1,9 @@
 package util;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import socialcore.activitymanager.exceptions.RecordException;
 import socialcore.activitymanager.model.Atividade;
@@ -11,6 +13,10 @@ import socialcore.resources.exceptions.InternalServerErrorException;
 
 public class AtividadeBuilder {
 	
+	public static final int TOTAL_ACTIVITIES = 100;
+	public static final int TOTAL_APPS = 5;
+	public static final int TOTAL_USERS = 10;
+
 	private Long usuario = 111L;
 	private Long app = 1L;
 	private Timestamp createdAt = new Timestamp(new Date().getTime());
@@ -37,7 +43,7 @@ public class AtividadeBuilder {
 	
 	public Atividade create() throws RecordException, InternalServerErrorException {
 		Atividade atividade = build();
-		atividade.validateAndSave();
+		atividade.save();
         return atividade;
     }
 	
@@ -87,16 +93,26 @@ public class AtividadeBuilder {
 	}
 	
 	public static void populate(){
+		int count = 1;
 		
 		try {
-			for(int atividadeIndex = 1; atividadeIndex <= 100; atividadeIndex++){
-				for(int app = 1; app <= 5; app++){
-					for(int usuario = 1; usuario <= 20; usuario++){
-						Atividade atividade = AtividadeBuilder.anAtividade().withApp(1L).withUsuario(100L).build();
+			for(int atividadeIndex = 1; atividadeIndex <= TOTAL_ACTIVITIES; atividadeIndex++){
+				for(long app = 1; app <= TOTAL_APPS; app++){
+					for(long usuario = 1; usuario <= TOTAL_USERS; usuario++){
+						count++;
+						
+						Atividade atividade = AtividadeBuilder.anAtividade().withApp(app).withUsuario(usuario).build();
+						atividade.propagated();
+						GregorianCalendar gregorianCalendar = new GregorianCalendar();
+						gregorianCalendar.add(Calendar.MINUTE, count);
+						atividade.setPublishedAt(new Timestamp(gregorianCalendar.getTimeInMillis()));
 						atividade.save();
+						
+						System.out.println("Published At: " + atividade.getPublishedAt().getTime());
 					}
 				}
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
