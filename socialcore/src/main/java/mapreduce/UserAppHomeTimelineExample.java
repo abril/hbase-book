@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Result;
@@ -37,7 +35,7 @@ import util.AtividadeBuilder;
 import util.HBaseHelper;
 
 
-public class AnalyzeData {
+public class UserAppHomeTimelineExample {
 
 	private static final String COLUMN_FAMILY_INFO = "info";
 	private static final String TABLE_NAME_ACTIVITIES = "atividades";
@@ -110,7 +108,7 @@ public class AnalyzeData {
 		filters.add(new RowFilter(CompareOp.EQUAL, new RegexStringComparator(builder.toString())));
 
 		Job job = new Job(conf, "Analyze data in " + TABLE_NAME_ACTIVITIES);
-		job.setJarByClass(AnalyzeData.class);
+		job.setJarByClass(UserAppHomeTimelineExample.class);
 		TableMapReduceUtil.initTableMapperJob(TABLE_NAME_ACTIVITIES, scan, AnalyzeMapper.class, Text.class, IntWritable.class, job); // co AnalyzeData-6-Util Set up the table mapper phase using the supplied utility.
 		job.setOutputFormatClass(NullOutputFormat.class);
 
