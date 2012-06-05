@@ -59,6 +59,10 @@ public class UserProfileTimelineExample {
 		List<Filter> filters = new ArrayList<Filter>();
 		
 		scan.addFamily(Bytes.toBytes(COLUMN_FAMILY_INFO));
+		byte[] startRow = Bytes.toBytes(StringUtils.leftPad(String.valueOf(USER), 20, '0'));
+		scan.setStartRow(startRow);
+		byte[] stopRow = Bytes.toBytes(StringUtils.leftPad(String.valueOf(USER + 1), 20, '0'));
+		scan.setStopRow(stopRow);
 		
 	    StringBuilder builder = new StringBuilder("^(");
 	    

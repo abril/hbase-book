@@ -12,11 +12,6 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.RegexStringComparator;
-import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import socialcore.activitymanager.db.hbase.HBaseRecordBuilder;
@@ -57,22 +52,13 @@ public class UserAppProfileTimelineExample {
 	private static List<Atividade> queryDatabase(Configuration conf) throws IOException {
 		HTable table = new HTable(conf, TABLE_NAME_ACTIVITIES);
 		Scan scan = new Scan();
-		List<Filter> filters = new ArrayList<Filter>();
 		
 		scan.addFamily(Bytes.toBytes(COLUMN_FAMILY_INFO));
-		
-	    StringBuilder builder = new StringBuilder("^(");
-	    
-	    builder.append(StringUtils.leftPad(String.valueOf(USER), 20, '0'));
-	    builder.append(")-");
-	    builder.append(StringUtils.leftPad(String.valueOf(APP), 20, '0'));
-	    builder.append("-");
-	    builder.append(".+");
-
-	    filters.add(new RowFilter(CompareOp.EQUAL, new RegexStringComparator(builder.toString())));
-	    FilterList filterList = new FilterList(filters);
-	    scan.setFilter(filterList);
-	    
+		byte[] startRow = Bytes.toBytes(StringUtils.leftPad(String.valueOf(USER), 20, '0') + "-" + StringUtils.leftPad(String.valueOf(APP), 20, '0') );
+		scan.setStartRow(startRow);
+		byte[] stopRow = Bytes.toBytes(StringUtils.leftPad(String.valueOf(USER), 20, '0') + "-" + StringUtils.leftPad(String.valueOf(APP + 1), 20, '0') );
+		scan.setStopRow(stopRow);
+			    
 	    ResultScanner scanner = table.getScanner(scan);
 	    
 	    List<Atividade> atividades = new ArrayList<Atividade>();
