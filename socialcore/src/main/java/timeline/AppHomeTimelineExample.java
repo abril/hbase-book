@@ -2,9 +2,7 @@ package timeline;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -34,8 +32,6 @@ public class AppHomeTimelineExample {
 	private static final String COLUMN_FAMILY_INFO = "info";
 	private static final String TABLE_NAME_ACTIVITIES = "atividades";
 	private static final long APP = 2L;
-	private static final Map<Long, List<Long>> SEGUIDOS = new HashMap<Long, List<Long>>();
-	
 
 	public static void main(String[] args) throws Exception {
 		Configuration conf = HBaseConfiguration.create();
@@ -76,25 +72,6 @@ public class AppHomeTimelineExample {
 		
 		long maxStamp = System.currentTimeMillis() * RecordBase.KEY_SHIFT_MULTIPLIER + RecordBase.KEY_SALT_RANDOM_MAX_VALUE;
 		
-		List<Long> seguidosUsuario1 = new ArrayList<Long>();
-		seguidosUsuario1.add(2L);
-		seguidosUsuario1.add(3L);
-		seguidosUsuario1.add(4L);
-		
-		List<Long> seguidosUsuario2 = new ArrayList<Long>();
-		seguidosUsuario1.add(3L);
-		
-		List<Long> seguidosUsuario3 = new ArrayList<Long>();
-		seguidosUsuario1.add(2L);
-		
-		
-		SEGUIDOS.put(1L, seguidosUsuario1);
-		SEGUIDOS.put(2L, seguidosUsuario2);
-		SEGUIDOS.put(3L, seguidosUsuario3);
-
-		/*
-		 * 
-		 */
 		HTable table = new HTable(conf, TABLE_NAME_ACTIVITIES);
 		Scan scan = new Scan();
 		List<Filter> filters = new ArrayList<Filter>();
